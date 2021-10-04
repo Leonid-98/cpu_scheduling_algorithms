@@ -18,6 +18,9 @@ done_processes = []
 
 tact = 0
 name = 1
+
+execution_order = []
+
 while len(done_processes) < expected_processes:
     iterations = range(len(processes_queue))
     for i in iterations:
@@ -40,8 +43,8 @@ while len(done_processes) < expected_processes:
             for waiting_process in low_priority_q:
                 waiting_process["wt"] += 1
 
-        current_process["sys_info"][1] -= 1        
-        print(tact, current_process["name"])
+        current_process["sys_info"][1] -= 1
+        execution_order.append([current_process["name"], tact])
 
         if current_process["sys_info"][1] > 0:
             high_priority_q.append(current_process)
@@ -53,8 +56,10 @@ while len(done_processes) < expected_processes:
         current_process = low_priority_q.pop(0)
         for waiting_process in low_priority_q:
             waiting_process["wt"] += 1
-        current_process["sys_info"][1] -= 1 
-        print(tact, current_process["name"])
+
+        current_process["sys_info"][1] -= 1
+        execution_order.append([current_process["name"], tact])
+
         if current_process["sys_info"][1] > 0:
             high_priority_q.append(current_process) if current_process["sys_info"][1] <= 3 else low_priority_q.append(current_process)
         else:
@@ -62,5 +67,5 @@ while len(done_processes) < expected_processes:
 
     tact += 1
 
+print(execution_order)
 print(np.mean([i["wt"] for i in done_processes]))
-

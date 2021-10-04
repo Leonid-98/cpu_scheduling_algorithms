@@ -1,7 +1,7 @@
 from operator import itemgetter
 
 
-class FCFS:
+class FCFS_class:
     """
     Iga protsessi täidatakse järjest saabumise kaudu.
     Kõik muutujad klassis on list'id, kus indeks vastab protsessi nimile (ja täitmise järjekorrale)

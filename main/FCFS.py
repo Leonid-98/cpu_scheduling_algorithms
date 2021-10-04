@@ -16,6 +16,8 @@ done_processes = []
 tact = 0
 name = 1
 
+execution_order = []
+
 while len(done_processes) < expected_processes:
     iterations = range(len(processes_queue))
     for i in iterations:
@@ -34,7 +36,7 @@ while len(done_processes) < expected_processes:
             waiting_process["wt"] += 1
         
         current_process["sys_info"][1] -= 1
-        print(tact, current_process)
+        execution_order.append([current_process["name"], tact])
 
         if current_process["sys_info"][1] > 0:
             waiting_queue.append(current_process)
@@ -43,5 +45,6 @@ while len(done_processes) < expected_processes:
 
     tact += 1
 
-
+print(execution_order)
 print(np.mean([i["wt"] for i in done_processes]))
+

@@ -19,6 +19,8 @@ tact = 0
 name = 1
 is_process_were_executed = False
 
+execution_order = []
+
 while len(done_processes) < expected_processes:
     iterations = range(len(processes_queue))
     for i in iterations:
@@ -47,7 +49,7 @@ while len(done_processes) < expected_processes:
             for waiting_process in waiting_queue:
                 waiting_process["wt"] += 3
 
-        print(tact, current_process)
+        execution_order.append([current_process["name"], tact])
         #############################
 
 
@@ -67,4 +69,5 @@ while len(done_processes) < expected_processes:
     if tact == 50:
         break
 
+print(execution_order)
 print(np.mean([i["wt"] for i in done_processes]))

@@ -1,5 +1,5 @@
 from tkinter import *
-from FCFS import FCFS
+from FCFS_class import FCFS_class
 from operator import itemgetter
 from numpy import mean
 
@@ -11,7 +11,7 @@ class MyGui(Frame):
         master.title("...")
         master.geometry(f"{1540}x{500}")
         master.resizable(False, False)
-        self.font = ("@Microsoft YaHei UI", 12)
+        self.font = ("Bahnschrift SemiBold", 12)
 
         self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=500)
         self.outercanvas.pack()
@@ -29,12 +29,18 @@ class MyGui(Frame):
         self.outercanvas.create_window(20, 180, anchor=NW, height=30, width=220, window=self.entry)
 
         self.colors = {
-            0: "#a83232",
-            1: "#3aa832",
-            2: "#4c96e0",
-            3: "#e04c94",
-            4: "#cde04c",
-            5: "#e04cc5",
+            "P1": "#0CF799",
+            "P2": "#4B43EB",
+            "P3": "#EB008E",
+            "P4": "#D4750B",
+            "P5": "#D8F50F",
+            "P6": "#0CF716",
+            "P7": "#0B86D4",
+            "P8": "#A000EB",
+            "P9": "#D43C0B",
+            "P10": "#F5D00F",
+            "P11": "#33D4AC",
+            "P12": "#D43366",
         }
 
     def get_processes_from_string(self, string):
@@ -52,15 +58,13 @@ class MyGui(Frame):
     def draw_using_fcfs(self):
         self.innercanvas.delete("all")
         processes_queue = self.get_processes_from_string(self.entry.get())
-        fcfs = FCFS(processes_queue)
+        fcfs = FCFS_class(processes_queue)
         execution_order: dict = fcfs.execution_order
         last_tact = max(execution_order, key=lambda x: x["completion"]).get("completion")
         # div = palju pikslit ühes taktis
         div = int(round(1500 / last_tact))
-        i = 0
         for process in execution_order:
-            self.draw_process_on_canvas(div, process.get("name"), process.get("start"), process.get("completion"), self.colors.get(i))
-            i += 1
+            self.draw_process_on_canvas(div, process.get("name"), process.get("start"), process.get("completion"), self.colors.get(process.get("name")))
         awt = mean([x["wt"] for x in execution_order])  # TODO
         print(awt)
 
