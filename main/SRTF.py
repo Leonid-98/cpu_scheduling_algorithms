@@ -9,8 +9,6 @@ def get_processes_from_string(string):
 
 string = "1,10;3,3;4,1;8,6;15,2"
 processes_queue = sorted(get_processes_from_string(string), key=itemgetter(0))
-
-processes_queue = [[1, 10], [3, 3], [4, 1], [8, 6], [15, 2]]
 expected_processes = len(processes_queue)  
 waiting_queue = []
 done_processes = []
@@ -18,7 +16,7 @@ done_processes = []
 tact = 0
 name = 1
 
-execution_order = []
+execution_history = []
 
 while len(done_processes) < expected_processes:
     # kontroollin, kas on protsessid valmis käivitamiseks
@@ -40,7 +38,7 @@ while len(done_processes) < expected_processes:
             waiting_process["wt"] += 1
 
         current_process["sys_info"][1] -= 1
-        execution_order.append([current_process["name"], tact])
+        execution_history.append([current_process["name"], tact])
         ################
 
         if current_process["sys_info"][1] > 0:
@@ -49,5 +47,22 @@ while len(done_processes) < expected_processes:
             done_processes.append(current_process)
     tact += 1
 
-print(execution_order)
+print(execution_history)
 print(np.mean([i["wt"] for i in done_processes]))
+
+def convert_history_to_order(execution_history):
+    prev_elem = None
+    execution_order = []
+    for i in range(len(execution_history)):
+        name = execution_history[i][0]
+        tact = execution_history[i][1]
+        if prev_elem != name:
+            execution_order.append([name, [tact, tact + 1]])
+        else:
+            execution_order[-1][1][1] += 1
+        prev_elem = name
+
+    return execution_order
+
+execution_order = convert_history_to_order(execution_history)
+print(execution_order)

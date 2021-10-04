@@ -16,7 +16,7 @@ done_processes = []
 tact = 0
 name = 1
 
-execution_order = []
+execution_history = []
 
 while len(done_processes) < expected_processes:
     iterations = range(len(processes_queue))
@@ -28,15 +28,15 @@ while len(done_processes) < expected_processes:
                 name += 1
         except IndexError:
             pass
-        
+
     if waiting_queue:
         waiting_queue = sorted(waiting_queue, key=lambda dict: dict["sys_info"][0])
         current_process = waiting_queue.pop(0)
         for waiting_process in waiting_queue:
             waiting_process["wt"] += 1
-        
+
         current_process["sys_info"][1] -= 1
-        execution_order.append([current_process["name"], tact])
+        execution_history.append([current_process["name"], tact])
 
         if current_process["sys_info"][1] > 0:
             waiting_queue.append(current_process)
@@ -45,6 +45,24 @@ while len(done_processes) < expected_processes:
 
     tact += 1
 
-print(execution_order)
+print(execution_history)
 print(np.mean([i["wt"] for i in done_processes]))
 
+
+
+def convert_history_to_order(execution_history):
+    prev_elem = None
+    execution_order = []
+    for i in range(len(execution_history)):
+        name = execution_history[i][0]
+        tact = execution_history[i][1]
+        if prev_elem != name:
+            execution_order.append([name, [tact, tact + 1]])
+        else:
+            execution_order[-1][1][1] += 1
+        prev_elem = name
+
+    return execution_order
+
+execution_order = convert_history_to_order(execution_history)
+print(execution_order)
