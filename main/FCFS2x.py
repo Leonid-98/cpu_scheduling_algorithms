@@ -7,10 +7,9 @@ def get_processes_from_string(string):
     return [[int(time) for time in process.split(",")] for process in string.split(";")]
 
 
-string = "4,2;12,3;13,2;1,10"
+string = "1,10;3,3;4,1;8,6;15,2"
 processes_queue = sorted(get_processes_from_string(string), key=itemgetter(0))
 
-processes_queue = [[1, 10], [3, 3], [4, 1], [8, 6], [15, 2]]
 expected_processes = len(processes_queue)
 low_priority_q = []
 high_priority_q = []
