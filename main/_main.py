@@ -1,7 +1,10 @@
-from tkinter import *
-from FCFS_class import FCFS_class
 from operator import itemgetter
-from numpy import mean
+from tkinter import *
+
+from FCFS import FCFS
+from FCFS2x import FCFS2x
+from RR3 import RR3
+from SRTF import SRTF
 
 
 class MyGui(Frame):
@@ -43,7 +46,7 @@ class MyGui(Frame):
             "P12": "#D43366",
         }
 
-    def get_processes_from_string(self, string):
+    def convert_string_to_process_queue(self, string):
         # abifunktsioon mis teisendab sisend kujuks: str "1,0;2,3" --> list [[1, 0], [2, 3]] ning kohe sorrteerib saabumise aja kaudu
         return sorted([[int(time) for time in process.split(",")] for process in string.split(";")], key=itemgetter(0))
 
@@ -57,16 +60,18 @@ class MyGui(Frame):
 
     def draw_using_fcfs(self):
         self.innercanvas.delete("all")
-        processes_queue = self.get_processes_from_string(self.entry.get())
-        fcfs = FCFS_class(processes_queue)
-        execution_order: dict = fcfs.execution_order
-        last_tact = max(execution_order, key=lambda x: x["completion"]).get("completion")
+        processes_queue = self.convert_string_to_process_queue(self.entry.get())
+        fcfs2x = SRTF(processes_queue)
+        execution_order = fcfs2x.get_execution_order()
+        awt = fcfs2x.get_awt()
+        last_tact = execution_order[-1][-1][-1]
         # div = palju pikslit ühes taktis
         div = int(round(1500 / last_tact))
         for process in execution_order:
-            self.draw_process_on_canvas(div, process.get("name"), process.get("start"), process.get("completion"), self.colors.get(process.get("name")))
-        awt = mean([x["wt"] for x in execution_order])  # TODO
-        print(awt)
+            name = process[0]
+            start = process[1][0]
+            stop = process[1][1]
+            self.draw_process_on_canvas(div, name, start, stop, self.colors.get(name))
 
 
 if __name__ == "__main__":
