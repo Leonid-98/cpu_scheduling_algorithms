@@ -11,21 +11,30 @@ class MyGui(Frame):
     def __init__(self, master):
         super().__init__()
         self.master = master
-        master.title("...")
-        master.geometry(f"{1540}x{500}")
+        master.title("Protsessoriaja haldus")
+        master.geometry(f"{1540}x{350}")
         master.resizable(False, False)
         self.font = ("Bahnschrift SemiBold", 12)
 
-        self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=500)
+        self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=350)
         self.outercanvas.pack()
         self.innercanvas = Canvas(self.outercanvas, width=1500, height=101, bg="#424242", highlightthickness=0)
         self.outercanvas.create_window(20, 20, anchor=NW, window=self.innercanvas)
 
-        run_btn = Button(self.outercanvas, text="Run", font=self.font, command=lambda: self.draw_using_fcfs())
-        self.outercanvas.create_window(20, 140, anchor=NW, height=30, width=80, window=run_btn)
+        fcfs_btn = Button(self.outercanvas, text="FCFS", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs"))
+        self.outercanvas.create_window(20, 140, anchor=NW, height=30, width=80, window=fcfs_btn)
+
+        fcfs2x_btn = Button(self.outercanvas, text="FCFS2X", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs2x"))
+        self.outercanvas.create_window(120, 140, anchor=NW, height=30, width=80, window=fcfs2x_btn)
+
+        rr3_btn = Button(self.outercanvas, text="RR3", font=self.font, command=lambda: self.calculate_schedue_and_draw("rr3"))
+        self.outercanvas.create_window(220, 140, anchor=NW, height=30, width=80, window=rr3_btn)
+
+        srtf_btn = Button(self.outercanvas, text="SRTF", font=self.font, command=lambda: self.calculate_schedue_and_draw("srtf"))
+        self.outercanvas.create_window(320, 140, anchor=NW, height=30, width=80, window=srtf_btn)
 
         clear_btn = Button(self.outercanvas, text="Clear", font=self.font, command=lambda: self.innercanvas.delete("all"))
-        self.outercanvas.create_window(160, 140, anchor=NW, height=30, width=80, window=clear_btn)
+        self.outercanvas.create_window(420, 140, anchor=NW, height=30, width=80, window=clear_btn)
 
         self.entry = Entry(self.outercanvas, font=self.font)
         self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
@@ -58,13 +67,24 @@ class MyGui(Frame):
         self.innercanvas.create_text(x1 + 15, 90, text=start_time, font=self.font)
         self.innercanvas.create_text(x2 - 15, 90, text=completion_time, font=self.font)
 
-    def draw_using_fcfs(self):
+    def calculate_schedue_and_draw(self, type: str):
         self.innercanvas.delete("all")
         processes_queue = self.convert_string_to_process_queue(self.entry.get())
-        fcfs2x = SRTF(processes_queue)
-        execution_order = fcfs2x.get_execution_order()
-        awt = fcfs2x.get_awt()
+
+        target = None
+        if type == "fcfs":
+            target = FCFS(processes_queue)
+        elif type == "fcfs2x":
+            target = FCFS2x(processes_queue)
+        elif type == "rr3":
+            target = RR3(processes_queue)
+        elif type == "srtf":
+            target = SRTF(processes_queue)
+
+        execution_order = target.get_execution_order()
+        awt = target.get_awt()
         last_tact = execution_order[-1][-1][-1]
+
         # div = palju pikslit ühes taktis
         div = int(round(1500 / last_tact))
         for process in execution_order:
