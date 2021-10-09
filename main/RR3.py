@@ -35,7 +35,6 @@ while len(done_processes) < expected_processes:
         current_process = waiting_queue.pop(0)
         is_process_were_executed = True
 
-        ############################ TODO blocking instead of += 3
         execution_time = 0
         if current_process["sys_info"][1] - 3 < 0:
             execution_time = current_process.get("sys_info")[1]
@@ -48,8 +47,8 @@ while len(done_processes) < expected_processes:
             for waiting_process in waiting_queue:
                 waiting_process["wt"] += 3
 
-        execution_history.append([current_process["name"], tact])
-        #############################
+        for i in range(execution_time):
+            execution_history.append([current_process["name"], tact + i])
 
         if current_process.get("sys_info")[1] > 0:
             waiting_queue.append(current_process)
@@ -66,3 +65,20 @@ while len(done_processes) < expected_processes:
 
 print(execution_history)
 print(np.mean([i["wt"] for i in done_processes]))
+
+def convert_history_to_order(execution_history):
+    prev_elem = None
+    execution_order = []
+    for i in range(len(execution_history)):
+        name = execution_history[i][0]
+        tact = execution_history[i][1]
+        if prev_elem != name:
+            execution_order.append([name, [tact, tact + 1]])
+        else:
+            execution_order[-1][1][1] += 1
+        prev_elem = name
+
+    return execution_order
+
+execution_order = convert_history_to_order(execution_history)
+print(execution_order)
