@@ -1,4 +1,5 @@
-from operator import itemgetter
+from operator import index, itemgetter
+import operator
 from tkinter import *
 
 from FCFS import FCFS
@@ -11,40 +12,11 @@ class MyGui(Frame):
     def __init__(self, master):
         super().__init__()
         self.master = master
+        self.width = 1000
         master.title("Protsessoriaja haldus")
-        master.geometry(f"{1540}x{350}")
+        master.geometry(f"{self.width + 40}x{350}")
         master.resizable(False, False)
         self.font = ("Bahnschrift SemiBold", 12)
-
-        self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=350)
-        self.outercanvas.pack()
-        self.innercanvas = Canvas(self.outercanvas, width=1500, height=101, bg="#424242", highlightthickness=0)
-        self.outercanvas.create_window(20, 20, anchor=NW, window=self.innercanvas)
-
-        fcfs_btn = Button(self.outercanvas, text="FCFS", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs"))
-        self.outercanvas.create_window(20, 140, anchor=NW, height=30, width=80, window=fcfs_btn)
-
-        fcfs2x_btn = Button(self.outercanvas, text="FCFS2X", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs2x"))
-        self.outercanvas.create_window(120, 140, anchor=NW, height=30, width=80, window=fcfs2x_btn)
-
-        rr3_btn = Button(self.outercanvas, text="RR3", font=self.font, command=lambda: self.calculate_schedue_and_draw("rr3"))
-        self.outercanvas.create_window(220, 140, anchor=NW, height=30, width=80, window=rr3_btn)
-
-        srtf_btn = Button(self.outercanvas, text="SRTF", font=self.font, command=lambda: self.calculate_schedue_and_draw("srtf"))
-        self.outercanvas.create_window(320, 140, anchor=NW, height=30, width=80, window=srtf_btn)
-
-        clear_btn = Button(self.outercanvas, text="Clear", font=self.font, command=lambda: self.clear_inner_canvas())
-        self.outercanvas.create_window(420, 140, anchor=NW, height=30, width=80, window=clear_btn)
-
-        self.awt_label = Label(self.outercanvas, text="Keskmine ootamis aeg: --", font=self.font, bg="#e1e8f4")
-        self.outercanvas.create_window(250, 180, anchor=NW, height=30, width=200, window=self.awt_label)
-        
-
-
-        self.entry = Entry(self.outercanvas, font=self.font)
-        self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
-        self.outercanvas.create_window(20, 180, anchor=NW, height=30, width=220, window=self.entry)
-
         self.colors = {
             "P1": "#0CF799",
             "P2": "#4B43EB",
@@ -60,10 +32,58 @@ class MyGui(Frame):
             "P12": "#D43366",
         }
 
-    def clear_inner_canvas(self):
-        self.innercanvas.delete("all")
-        self.awt_label["text"]= "Keskmine ootamis aeg: --"
+        self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=350)
+        self.outercanvas.pack()
+        self.innercanvas = Canvas(self.outercanvas, width=self.width, height=101, bg="#424242", highlightthickness=0)
+        self.outercanvas.create_window(20, 20, anchor=NW, window=self.innercanvas)
 
+        fcfs_btn = Button(self.outercanvas, text="FCFS", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs"))
+        self.outercanvas.create_window(20, 140, anchor=NW, height=30, width=80, window=fcfs_btn)
+
+        fcfs2x_btn = Button(self.outercanvas, text="FCFS2X", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs2x"))
+        self.outercanvas.create_window(120, 140, anchor=NW, height=30, width=80, window=fcfs2x_btn)
+
+        rr3_btn = Button(self.outercanvas, text="RR3", font=self.font, command=lambda: self.calculate_schedue_and_draw("rr3"))
+        self.outercanvas.create_window(220, 140, anchor=NW, height=30, width=80, window=rr3_btn)
+
+        srtf_btn = Button(self.outercanvas, text="SRTF", font=self.font, command=lambda: self.calculate_schedue_and_draw("srtf"))
+        self.outercanvas.create_window(320, 140, anchor=NW, height=30, width=80, window=srtf_btn)
+
+        clear_btn = Button(self.outercanvas, text="Reset", font=self.font, command=lambda: self.reset_inner_canvas())
+        self.outercanvas.create_window(420, 140, anchor=NW, height=30, width=80, window=clear_btn)
+
+        self.awt_label = Label(self.outercanvas, text="Keskmine ootamis aeg: --", font=self.font, bg="#e1e8f4")
+        self.outercanvas.create_window(250, 180, anchor=NW, height=30, width=200, window=self.awt_label)
+
+        self.entry = Entry(self.outercanvas, font=self.font, state=NORMAL)
+        self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
+        self.outercanvas.create_window(20, 180, anchor=NW, height=30, width=220, window=self.entry)
+
+        defaults_for_option_menu = [
+            "Enda oma üleval",
+            "0,7;1,5;2,3;3,1;4,2;5,1",
+            "0,2;1,4;12,4;15,5;21,10",
+            "0,4;1,5;2,2;3,1;4,6;6,3",
+        ]
+        option_menu_var = StringVar()
+        option_menu_var.set(defaults_for_option_menu[0])
+        self.drop = OptionMenu(self.outercanvas, option_menu_var, *defaults_for_option_menu, command=lambda event_choice: self.check_option_menu_choise(event_choice))
+        self.drop.config(font=self.font)
+        self.outercanvas.create_window(20, 220, anchor=NW, height=30, width=220, window=self.drop)
+        menu = master.nametowidget(self.drop.menuname)
+        menu.config(font=self.font) 
+
+    def check_option_menu_choise(self, event_choice):
+        if event_choice == "Enda oma üleval":
+            self.entry.config(state=NORMAL)
+        else:
+            self.entry.config(state=DISABLED)
+
+    def reset_inner_canvas(self):
+        self.innercanvas.delete("all")
+        self.awt_label["text"] = "Keskmine ootamis aeg: --"
+        self.entry.delete(0, END)
+        self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
 
     def convert_string_to_process_queue(self, string):
         # abifunktsioon mis teisendab sisend kujuks: str "1,0;2,3" --> list [[1, 0], [2, 3]] ning kohe sorrteerib saabumise aja kaudu
@@ -74,11 +94,11 @@ class MyGui(Frame):
         x2 = div * completion_time
         self.innercanvas.create_rectangle(x1 - 1, -1, x2, 101, fill=color, width=0)
         self.innercanvas.create_text((x1 + x2) / 2, 50, text=process_name, font=self.font)
-        self.innercanvas.create_text(x1 + 15, 90, text=start_time, font=self.font)
-        self.innercanvas.create_text(x2 - 15, 90, text=completion_time, font=self.font)
+        self.innercanvas.create_text(x1 + 10, 90, text=start_time, font=self.font)
+        self.innercanvas.create_text(x2 - 10, 90, text=completion_time, font=self.font)
 
     def calculate_schedue_and_draw(self, type: str):
-        self.clear_inner_canvas()
+        self.reset_inner_canvas()
         processes_queue = self.convert_string_to_process_queue(self.entry.get())
 
         target = None
@@ -95,9 +115,9 @@ class MyGui(Frame):
         awt = target.get_awt()
         last_tact = execution_order[-1][-1][-1]
 
-        self.awt_label["text"]= "Keskmine ootamis aeg: " + str(awt)
+        self.awt_label["text"] = "Keskmine ootamis aeg: " + str(awt)
         # div = palju pikslit ühes taktis
-        div = int(round(1500 / last_tact))
+        div = int(round(self.width / last_tact))
         for process in execution_order:
             name = process[0]
             start = process[1][0]
