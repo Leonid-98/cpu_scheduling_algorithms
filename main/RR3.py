@@ -82,7 +82,3 @@ class RR3:
 
     def get_execution_order(self):
         return self.execution_order
-
-
-processes_queue = [[1, 10], [3, 3], [4, 1], [8, 6], [15, 2]]
-RR3(processes_queue)
