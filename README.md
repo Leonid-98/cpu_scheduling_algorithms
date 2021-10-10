@@ -1,4 +1,4 @@
-# CPUSchedulingAlgorithms
+# CPU Scheduling Algorithms
 **Simple graphical implementation of four processor scheduling algorithms using `Python` and `Tkinter` module.**
 
 **1. First Come First Serve** </br>
