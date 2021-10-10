@@ -43,8 +43,7 @@ class SRTF:
                 else:
                     done_processes.append(current_process)
             tact += 1
-
-        awt = mean([i["wt"] for i in done_processes])
+        awt = round(mean([i["wt"] for i in done_processes]), 2)
 
         return execution_history, awt
 

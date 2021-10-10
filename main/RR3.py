@@ -59,7 +59,7 @@ class RR3:
                 is_process_were_executed = False
             else:
                 tact += 1
-        awt = mean([i["wt"] for i in done_processes])
+        awt = round(mean([i["wt"] for i in done_processes]), 2)
 
         return execution_history, awt
 

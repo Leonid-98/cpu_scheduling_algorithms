@@ -1,6 +1,7 @@
+import itertools
 from operator import index, itemgetter
-import operator
 from tkinter import *
+from PIL import ImageTk
 
 from FCFS import FCFS
 from FCFS2x import FCFS2x
@@ -31,10 +32,18 @@ class MyGui(Frame):
             "P11": "#33D4AC",
             "P12": "#D43366",
         }
+        defaults_for_option_menu = [
+            "Enda oma üleval",
+            "0,7;1,5;2,3;3,1;4,2;5,1",
+            "0,2;1,4;12,4;15,5;21,10",
+            "0,4;1,5;2,2;3,1;4,6;6,3",
+        ]
+        self.option_menu_choise = defaults_for_option_menu[0]
 
-        self.outercanvas = Canvas(master, bg="#e1e8f4", width=1540, height=350)
+        self.outercanvas = Canvas(master, bg="#dbf7ff", width=self.width + 40, height=350)
         self.outercanvas.pack()
-        self.innercanvas = Canvas(self.outercanvas, width=self.width, height=101, bg="#424242", highlightthickness=0)
+
+        self.innercanvas = Canvas(self.outercanvas, width=self.width, height=101, bg="#7b9ba4", highlightthickness=0)
         self.outercanvas.create_window(20, 20, anchor=NW, window=self.innercanvas)
 
         fcfs_btn = Button(self.outercanvas, text="FCFS", font=self.font, command=lambda: self.calculate_schedue_and_draw("fcfs"))
@@ -52,77 +61,93 @@ class MyGui(Frame):
         clear_btn = Button(self.outercanvas, text="Reset", font=self.font, command=lambda: self.reset_inner_canvas())
         self.outercanvas.create_window(420, 140, anchor=NW, height=30, width=80, window=clear_btn)
 
-        self.awt_label = Label(self.outercanvas, text="Keskmine ootamis aeg: --", font=self.font, bg="#e1e8f4")
-        self.outercanvas.create_window(250, 180, anchor=NW, height=30, width=200, window=self.awt_label)
+        self.awt_label = Label(self.outercanvas, text="Keskmine ootamis aeg: --", font=self.font, bg="#dbf7ff")
+        self.outercanvas.create_window(250, 180, anchor=NW, height=30, width=210, window=self.awt_label)
 
         self.entry = Entry(self.outercanvas, font=self.font, state=NORMAL)
         self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
         self.outercanvas.create_window(20, 180, anchor=NW, height=30, width=220, window=self.entry)
 
-        defaults_for_option_menu = [
-            "Enda oma üleval",
-            "0,7;1,5;2,3;3,1;4,2;5,1",
-            "0,2;1,4;12,4;15,5;21,10",
-            "0,4;1,5;2,2;3,1;4,6;6,3",
-        ]
-        option_menu_var = StringVar()
-        option_menu_var.set(defaults_for_option_menu[0])
-        self.drop = OptionMenu(self.outercanvas, option_menu_var, *defaults_for_option_menu, command=lambda event_choice: self.check_option_menu_choise(event_choice))
-        self.drop.config(font=self.font)
-        self.outercanvas.create_window(20, 220, anchor=NW, height=30, width=220, window=self.drop)
-        menu = master.nametowidget(self.drop.menuname)
-        menu.config(font=self.font) 
+        self.option_menu_var = StringVar()
+        self.option_menu_var.set(defaults_for_option_menu[0])
+        self.option_menu = OptionMenu(
+            self.outercanvas, self.option_menu_var, *defaults_for_option_menu, command=lambda event_choice: self.check_option_menu_choise(event_choice)
+        )
+        self.option_menu.config(font=self.font)
+        menu = master.nametowidget(self.option_menu.menuname)
+        menu.config(font=self.font)
+        self.outercanvas.create_window(20, 220, anchor=NW, height=30, width=220, window=self.option_menu)
 
-    def check_option_menu_choise(self, event_choice):
-        if event_choice == "Enda oma üleval":
-            self.entry.config(state=NORMAL)
-        else:
-            self.entry.config(state=DISABLED)
+        self.name_label = Label(self.outercanvas, text="Operatsioonisüsteemid (LTAT.06.001)\nLeonid Tšigrinski 2021", font=self.font, bg="#dbf7ff")
+        self.outercanvas.create_window(630, 140, anchor=NW, height=50, width=300, window=self.name_label)
+
+    def convert_string_to_process_queue(self, string):
+        """abifunktsioon mis teisendab sisend kujuks: str "1,0;2,3" --> list [[1, 0], [2, 3]] ning kohe sorrteerib saabumise aja kaudu"""
+        return sorted([[int(time) for time in process.split(",")] for process in string.split(";")], key=itemgetter(0))
 
     def reset_inner_canvas(self):
+        """event funktsion, puhastab sisemine canvas"""
         self.innercanvas.delete("all")
         self.awt_label["text"] = "Keskmine ootamis aeg: --"
         self.entry.delete(0, END)
         self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
 
-    def convert_string_to_process_queue(self, string):
-        # abifunktsioon mis teisendab sisend kujuks: str "1,0;2,3" --> list [[1, 0], [2, 3]] ning kohe sorrteerib saabumise aja kaudu
-        return sorted([[int(time) for time in process.split(",")] for process in string.split(";")], key=itemgetter(0))
+    def check_option_menu_choise(self, event_choice):
+        """event funktsion option menu jaoks"""
+        self.option_menu_choise = event_choice
+        if event_choice == "Enda oma üleval":
+            self.entry.config(state=NORMAL)
+        else:
+            self.entry.config(state=DISABLED)
 
-    def draw_process_on_canvas(self, div, process_name, start_time, completion_time, color):
-        x1 = div * start_time
-        x2 = div * completion_time
-        self.innercanvas.create_rectangle(x1 - 1, -1, x2, 101, fill=color, width=0)
-        self.innercanvas.create_text((x1 + x2) / 2, 50, text=process_name, font=self.font)
-        self.innercanvas.create_text(x1 + 10, 90, text=start_time, font=self.font)
-        self.innercanvas.create_text(x2 - 10, 90, text=completion_time, font=self.font)
-
-    def calculate_schedue_and_draw(self, type: str):
+    def calculate_schedue_and_draw(self, algorithm: str):
+        """event põhifunktsioon arvutamise jaoks"""
         self.reset_inner_canvas()
-        processes_queue = self.convert_string_to_process_queue(self.entry.get())
 
-        target = None
-        if type == "fcfs":
-            target = FCFS(processes_queue)
-        elif type == "fcfs2x":
-            target = FCFS2x(processes_queue)
-        elif type == "rr3":
-            target = RR3(processes_queue)
-        elif type == "srtf":
-            target = SRTF(processes_queue)
+        processes_queue = None
+        if self.option_menu_choise == "Enda oma üleval":
+            processes_queue = self.convert_string_to_process_queue(self.entry.get())
+        else:
+            processes_queue = self.convert_string_to_process_queue(self.option_menu_choise)
 
-        execution_order = target.get_execution_order()
-        awt = target.get_awt()
-        last_tact = execution_order[-1][-1][-1]
+        algorithm_class = None
+        if algorithm == "fcfs":
+            algorithm_class = FCFS(processes_queue)
+        elif algorithm == "fcfs2x":
+            algorithm_class = FCFS2x(processes_queue)
+        elif algorithm == "rr3":
+            algorithm_class = RR3(processes_queue)
+        elif algorithm == "srtf":
+            algorithm_class = SRTF(processes_queue)
 
+        execution_order = algorithm_class.get_execution_order()
+        self.draw_process_on_canvas(execution_order)
+
+        awt = algorithm_class.get_awt()
         self.awt_label["text"] = "Keskmine ootamis aeg: " + str(awt)
-        # div = palju pikslit ühes taktis
+
+    def draw_process_on_canvas(self, execution_order):
+        """abifunktsioon calculate_schedue_and_draw(algorithm) jaoks, joonistab protsessid ja taktid"""
+        last_tact = execution_order[-1][-1][-1]
+        # palju pikslit ühes taktis
         div = int(round(self.width / last_tact))
+        # [P1, [2,6]], [P2, [6, 8] --> [2, 6], [6, 8] --> {2, 6, 8} --> [2, 6, 8]
+        critical_tacts = list(set(itertools.chain.from_iterable([process[1] for process in execution_order])))
+        # joonista riskülikud (protsessid)
         for process in execution_order:
             name = process[0]
             start = process[1][0]
             stop = process[1][1]
-            self.draw_process_on_canvas(div, name, start, stop, self.colors.get(name))
+
+            x1 = div * start
+            x2 = div * stop
+            self.innercanvas.create_rectangle(x1 - 1, -1, x2, 101, fill=self.colors.get(name), width=0)
+            self.innercanvas.create_text((x1 + x2) / 2, 50, text=name, font=self.font)
+        # joonista vajalikud taktid
+        self.innercanvas.create_text(div * critical_tacts[0] + 10, 90, text=critical_tacts[0], font=self.font)
+        for tact in critical_tacts[1:-1]:
+            self.innercanvas.create_text(div * tact - 1, 90, text=tact, font=self.font)
+        self.innercanvas.create_text(div * critical_tacts[-1] - 11, 90, text=critical_tacts[-1], font=self.font)
 
 
 if __name__ == "__main__":
