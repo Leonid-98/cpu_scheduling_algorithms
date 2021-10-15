@@ -44,7 +44,6 @@ class FCFS2x:
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if high_priority_q:
-                high_priority_q = sorted(high_priority_q, key=lambda dict: dict["sys_info"][0])
                 current_process = high_priority_q.pop(0)
                 for waiting_process in high_priority_q:
                     waiting_process["wt"] += 1
@@ -56,12 +55,11 @@ class FCFS2x:
                 execution_history.append([current_process["name"], tact])
 
                 if current_process["sys_info"][1] > 0:
-                    high_priority_q.append(current_process)
+                    high_priority_q.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
             elif low_priority_q:
-                low_priority_q = sorted(low_priority_q, key=lambda dict: dict["sys_info"][0])
                 current_process = low_priority_q.pop(0)
                 for waiting_process in low_priority_q:
                     waiting_process["wt"] += 1
@@ -75,8 +73,6 @@ class FCFS2x:
                     done_processes.append(current_process)
 
             tact += 1
-            if tact == 50:
-                break
         awt = round(mean([i["wt"] for i in done_processes]), 2)
 
         return execution_history, awt
@@ -103,7 +99,6 @@ class FCFS2x:
 
 
 if __name__ == "__main__":
-    # TODO FIX
     fcfs2x = FCFS2x([[0, 10], [0, 10], [0, 10], [0, 10]])
     order = fcfs2x.get_execution_order()
     awt = fcfs2x.get_awt()

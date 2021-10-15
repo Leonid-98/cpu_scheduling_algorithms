@@ -29,8 +29,6 @@ class FCFS:
 
             if waiting_queue:
                 current_process = waiting_queue.pop(0)
-                print(tact, current_process)
-
                 for waiting_process in waiting_queue:
                     waiting_process["wt"] += 1
 
@@ -43,9 +41,7 @@ class FCFS:
                     done_processes.append(current_process)
 
             tact += 1
-
         awt = round(mean([i["wt"] for i in done_processes]), 2)
-        awt = 0
 
         return execution_history, awt
 
