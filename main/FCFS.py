@@ -15,31 +15,21 @@ class FCFS:
 
         tact = 0
         name = 1
-        iterations = range(len(processes_queue))
-        
-        while len(done_processes) < expected_processes:
-            # TODO REMOVE BETTER FUNCTION
-            
-            i = 0
-            while i <= iterations:
-                if tact >= processes_queue[i][0]:
-                    wt = tact - processes_queue[i][0]
-                    waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                    name += 1
-                else:
-                    i += 1
-            print(tact, waiting_queue)
 
-            # for process in list(processes_queue):
-            #     print(process)
-            #     if tact >= process[1]:
-            #         wt = tact - process[1]
-            #         waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(process), "wt": wt})
-            #         name += 1
-            # print(tact, waiting_queue)
+        while len(done_processes) < expected_processes:
+
+            taken_processes = []
+            for process in processes_queue:
+                if tact >= process[0]:
+                    wt = tact - process[0]
+                    waiting_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    name += 1
+                    taken_processes.append(process)
+            processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if waiting_queue:
                 current_process = waiting_queue.pop(0)
+                print(tact, current_process)
 
                 for waiting_process in waiting_queue:
                     waiting_process["wt"] += 1
@@ -53,7 +43,9 @@ class FCFS:
                     done_processes.append(current_process)
 
             tact += 1
+
         awt = round(mean([i["wt"] for i in done_processes]), 2)
+        awt = 0
 
         return execution_history, awt
 
@@ -79,5 +71,5 @@ class FCFS:
 
 
 if __name__ == "__main__":
-    go = FCFS([[1, 3], [1, 4], [1, 5]])
+    go = FCFS([[0, 3], [1, 4], [1, 11]])
     print(go.get_execution_order())
