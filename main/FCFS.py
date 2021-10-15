@@ -15,21 +15,32 @@ class FCFS:
 
         tact = 0
         name = 1
-
+        iterations = range(len(processes_queue))
+        
         while len(done_processes) < expected_processes:
-            iterations = range(len(processes_queue))
-            for i in iterations:
-                try:
-                    if tact >= processes_queue[i][0]:
-                        wt = tact - processes_queue[i][0]
-                        waiting_queue.insert(0, {"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                        name += 1
-                except IndexError:
-                    pass
+            # TODO REMOVE BETTER FUNCTION
+            
+            i = 0
+            while i <= iterations:
+                if tact >= processes_queue[i][0]:
+                    wt = tact - processes_queue[i][0]
+                    waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
+                    name += 1
+                else:
+                    i += 1
+            print(tact, waiting_queue)
+
+            # for process in list(processes_queue):
+            #     print(process)
+            #     if tact >= process[1]:
+            #         wt = tact - process[1]
+            #         waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(process), "wt": wt})
+            #         name += 1
+            # print(tact, waiting_queue)
 
             if waiting_queue:
-                waiting_queue = sorted(waiting_queue, key=lambda dict: dict["sys_info"][0])
                 current_process = waiting_queue.pop(0)
+
                 for waiting_process in waiting_queue:
                     waiting_process["wt"] += 1
 
@@ -37,7 +48,7 @@ class FCFS:
                 execution_history.append([current_process["name"], tact])
 
                 if current_process["sys_info"][1] > 0:
-                    waiting_queue.append(current_process)
+                    waiting_queue.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
@@ -65,3 +76,8 @@ class FCFS:
 
     def get_execution_order(self):
         return self.execution_order
+
+
+if __name__ == "__main__":
+    go = FCFS([[1, 3], [1, 4], [1, 5]])
+    print(go.get_execution_order())

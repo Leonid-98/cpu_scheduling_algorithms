@@ -81,6 +81,9 @@ class MyGui(Frame):
         self.name_label = Label(self.outercanvas, text="Operatsioonisüsteemid (LTAT.06.001)\nLeonid Tšigrinski 2021", font=self.font, bg="#dbf7ff")
         self.outercanvas.create_window(630, 140, anchor=NW, height=50, width=300, window=self.name_label)
 
+        self.order_label = Label(self.outercanvas, text="Test", font=self.font, bg="#dbf7ff")
+        self.outercanvas.create_window(630, 200, anchor=NW, height=50, width=300, window=self.order_label)
+
     def convert_string_to_process_queue(self, string):
         """abifunktsioon mis teisendab sisend kujuks: str "1,0;2,3" --> list [[1, 0], [2, 3]] ning kohe sorrteerib saabumise aja kaudu"""
         return sorted([[int(time) for time in process.split(",")] for process in string.split(";")], key=itemgetter(0))
@@ -89,6 +92,7 @@ class MyGui(Frame):
         """event funktsion, puhastab sisemine canvas"""
         self.innercanvas.delete("all")
         self.awt_label["text"] = "Keskmine ootamis aeg: --"
+        self.order_label["text"] = ""
         self.entry.delete(0, END)
         self.entry.insert(END, "1,10;3,3;4,1;8,6;15,2")
 
@@ -109,6 +113,7 @@ class MyGui(Frame):
             processes_queue = self.convert_string_to_process_queue(self.entry.get())
         else:
             processes_queue = self.convert_string_to_process_queue(self.option_menu_choise)
+        self.order_label["text"] = "Käsil olevad protsessid:\n" + str(processes_queue)[1:-1]
 
         algorithm_class = None
         if algorithm == "fcfs":

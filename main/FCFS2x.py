@@ -58,7 +58,7 @@ class FCFS2x:
                 execution_history.append([current_process["name"], tact])
 
                 if current_process["sys_info"][1] > 0:
-                    high_priority_q.append(current_process) if current_process["sys_info"][1] <= 3 else low_priority_q.append(current_process)
+                    high_priority_q.append(current_process) if current_process["sys_info"][1] <= 3 else low_priority_q.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
@@ -91,7 +91,7 @@ class FCFS2x:
 
 if __name__ == "__main__":
     # debug
-    fcfs2x = FCFS2x([[0, 2], [0, 3], [1, 4], [1, 5]])
+    fcfs2x = FCFS2x([[0, 10], [0, 10], [0, 10], [0, 10]])
     order = fcfs2x.get_execution_order()
     awt = fcfs2x.get_awt()
     print(order)
