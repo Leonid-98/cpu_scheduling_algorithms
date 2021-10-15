@@ -18,18 +18,30 @@ class FCFS2x:
         name = 1
 
         while len(done_processes) < expected_processes:
-            iterations = range(len(processes_queue))
-            for i in iterations:
-                try:
-                    if tact >= processes_queue[i][0]:
-                        wt = tact - processes_queue[i][0]
-                        if processes_queue[i][1] <= 3:
-                            high_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                        else:
-                            low_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                        name += 1
-                except IndexError:
-                    pass
+            # iterations = range(len(processes_queue))
+            # for i in iterations:
+            #     try:
+            #         if tact >= processes_queue[i][0]:
+            #             wt = tact - processes_queue[i][0]
+            #             if processes_queue[i][1] <= 3:
+            #                 high_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
+            #             else:
+            #                 low_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
+            #             name += 1
+            #     except IndexError:
+            #         pass
+
+            taken_processes = []
+            for process in processes_queue:
+                if tact >= process[0]:
+                    wt = tact - process[0]
+                    if process[0] <= 3:
+                        high_priority_q.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    else:
+                        low_priority_q.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    name += 1
+                    taken_processes.append(process)
+            processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if high_priority_q:
                 high_priority_q = sorted(high_priority_q, key=lambda dict: dict["sys_info"][0])
@@ -58,7 +70,7 @@ class FCFS2x:
                 execution_history.append([current_process["name"], tact])
 
                 if current_process["sys_info"][1] > 0:
-                    high_priority_q.append(current_process) if current_process["sys_info"][1] <= 3 else low_priority_q.append(current_process)
+                    high_priority_q.append(current_process) if current_process["sys_info"][1] <= 3 else low_priority_q.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
@@ -66,7 +78,7 @@ class FCFS2x:
             if tact == 50:
                 break
         awt = round(mean([i["wt"] for i in done_processes]), 2)
-    
+
         return execution_history, awt
 
     def convert_history_to_order(self, execution_history):
@@ -89,10 +101,11 @@ class FCFS2x:
     def get_execution_order(self):
         return self.execution_order
 
+
 if __name__ == "__main__":
-    # TODO FIX THIS ORDER
-    class_ = FCFS2x([[1, 3], [1, 3]])
-    order = class_.get_execution_order()
-    awt = class_.get_awt()
+    # TODO FIX
+    fcfs2x = FCFS2x([[0, 10], [0, 10], [0, 10], [0, 10]])
+    order = fcfs2x.get_execution_order()
+    awt = fcfs2x.get_awt()
     print(order)
     print(awt)

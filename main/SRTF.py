@@ -17,15 +17,24 @@ class SRTF:
         name = 1
 
         while len(done_processes) < expected_processes:
-            iterations = range(len(processes_queue))
-            for i in iterations:
-                try:
-                    if tact >= processes_queue[i][0]:
-                        wt = tact - processes_queue[i][0]
-                        waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                        name += 1
-                except IndexError:
-                    pass
+            # iterations = range(len(processes_queue))
+            # for i in iterations:
+            #     try:
+            #         if tact >= processes_queue[i][0]:
+            #             wt = tact - processes_queue[i][0]
+            #             waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
+            #             name += 1
+            #     except IndexError:
+            #         pass
+
+            taken_processes = []
+            for process in processes_queue:
+                if tact >= process[0]:
+                    wt = tact - process[0]
+                    waiting_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    name += 1
+                    taken_processes.append(process)
+            processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if waiting_queue:
                 shortest_process = min(waiting_queue, key=lambda dict: dict["sys_info"][1])
