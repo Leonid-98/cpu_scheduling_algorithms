@@ -102,7 +102,7 @@ class MyGui(Frame):
 
     def calculate_schedue_and_draw(self, algorithm: str):
         """event põhifunktsioon arvutamise jaoks"""
-        self.reset_inner_canvas()
+        self.innercanvas.delete("all")
 
         processes_queue = None
         if self.option_menu_choise == "Enda oma üleval":

@@ -21,11 +21,12 @@ class FCFS2x:
             iterations = range(len(processes_queue))
             for i in iterations:
                 try:
-                    if tact == processes_queue[i][0]:
+                    if tact >= processes_queue[i][0]:
+                        wt = tact - processes_queue[i][0]
                         if processes_queue[i][1] <= 3:
-                            high_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": 0})
+                            high_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
                         else:
-                            low_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": 0})
+                            low_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
                         name += 1
                 except IndexError:
                     pass
@@ -62,8 +63,10 @@ class FCFS2x:
                     done_processes.append(current_process)
 
             tact += 1
+            if tact == 50:
+                break
         awt = round(mean([i["wt"] for i in done_processes]), 2)
-        
+    
         return execution_history, awt
 
     def convert_history_to_order(self, execution_history):
@@ -85,3 +88,11 @@ class FCFS2x:
 
     def get_execution_order(self):
         return self.execution_order
+
+if __name__ == "__main__":
+    # debug
+    fcfs2x = FCFS2x([[0, 2], [0, 3], [1, 4], [1, 5]])
+    order = fcfs2x.get_execution_order()
+    awt = fcfs2x.get_awt()
+    print(order)
+    print(awt)

@@ -20,8 +20,9 @@ class SRTF:
             iterations = range(len(processes_queue))
             for i in iterations:
                 try:
-                    if tact == processes_queue[i][0]:
-                        waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": 0})
+                    if tact >= processes_queue[i][0]:
+                        wt = tact - processes_queue[i][0]
+                        waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
                         name += 1
                 except IndexError:
                     pass
