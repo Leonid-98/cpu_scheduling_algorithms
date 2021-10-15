@@ -90,9 +90,9 @@ class FCFS2x:
         return self.execution_order
 
 if __name__ == "__main__":
-    # debug
-    fcfs2x = FCFS2x([[0, 2], [0, 3], [1, 4], [1, 5]])
-    order = fcfs2x.get_execution_order()
-    awt = fcfs2x.get_awt()
+    # TODO FIX THIS ORDER
+    class_ = FCFS2x([[1, 3], [1, 3]])
+    order = class_.get_execution_order()
+    awt = class_.get_awt()
     print(order)
     print(awt)

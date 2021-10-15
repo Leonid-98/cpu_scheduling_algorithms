@@ -82,3 +82,10 @@ class RR3:
 
     def get_execution_order(self):
         return self.execution_order
+
+if __name__ == "__main__":
+    class_ = RR3([[1, 6], [1, 6]])
+    order = class_.get_execution_order()
+    awt = class_.get_awt()
+    print(order)
+    print(awt)

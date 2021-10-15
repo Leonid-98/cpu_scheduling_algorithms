@@ -147,7 +147,7 @@ class MyGui(Frame):
         self.innercanvas.create_text(div * critical_tacts[0] + 10, 90, text=critical_tacts[0], font=self.font)
         for tact in critical_tacts[1:-1]:
             self.innercanvas.create_text(div * tact - 1, 90, text=tact, font=self.font)
-        self.innercanvas.create_text(div * critical_tacts[-1] - 11, 90, text=critical_tacts[-1], font=self.font)
+        self.innercanvas.create_text(div * critical_tacts[-1] - 15, 90, text=critical_tacts[-1], font=self.font)
 
 
 if __name__ == "__main__":

@@ -67,3 +67,11 @@ class SRTF:
 
     def get_execution_order(self):
         return self.execution_order
+
+if __name__ == "__main__":
+    #TODO FIX THIS ORDER
+    class_ = SRTF([[1, 6], [1, 4]])
+    order = class_.get_execution_order()
+    awt = class_.get_awt()
+    print(order)
+    print(awt)

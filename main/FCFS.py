@@ -12,6 +12,7 @@ class FCFS:
         done_processes = []
 
         waiting_queue = []
+        is_process_were_executed = False
 
         tact = 0
         name = 1
@@ -28,20 +29,25 @@ class FCFS:
                     pass
 
             if waiting_queue:
-                waiting_queue = sorted(waiting_queue, key=lambda dict: dict["sys_info"][0])
                 current_process = waiting_queue.pop(0)
+                is_process_were_executed = True
+                execution_time = current_process["sys_info"][1]
+
                 for waiting_process in waiting_queue:
-                    waiting_process["wt"] += 1
+                    waiting_process["wt"] += execution_time
 
-                current_process["sys_info"][1] -= 1
-                execution_history.append([current_process["name"], tact])
+                current_process["sys_info"][1] -= execution_time
+                for i in range(execution_time):
+                    execution_history.append([current_process["name"], tact + i])
+                done_processes.append(current_process)
 
-                if current_process["sys_info"][1] > 0:
-                    waiting_queue.append(current_process)
-                else:
-                    done_processes.append(current_process)
+                tact += execution_time
 
-            tact += 1
+            if is_process_were_executed:
+                is_process_were_executed = False
+            else:
+                tact += 1
+
         awt = round(mean([i["wt"] for i in done_processes]), 2)
 
         return execution_history, awt
@@ -65,3 +71,11 @@ class FCFS:
 
     def get_execution_order(self):
         return self.execution_order
+
+
+if __name__ == "__main__":
+    class_ = FCFS([[0, 6], [1, 6], [2, 3], [3, 6]])
+    order = class_.get_execution_order()
+    awt = class_.get_awt()
+    print(order)
+    print(awt)
