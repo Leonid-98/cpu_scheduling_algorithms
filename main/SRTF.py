@@ -17,16 +17,7 @@ class SRTF:
         name = 1
 
         while len(done_processes) < expected_processes:
-            # iterations = range(len(processes_queue))
-            # for i in iterations:
-            #     try:
-            #         if tact >= processes_queue[i][0]:
-            #             wt = tact - processes_queue[i][0]
-            #             waiting_queue.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-            #             name += 1
-            #     except IndexError:
-            #         pass
-
+            # kontrollin, kas sain uued protsessid
             taken_processes = []
             for process in processes_queue:
                 if tact >= process[0]:
@@ -37,21 +28,17 @@ class SRTF:
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if waiting_queue:
+                # käivitan protsess
                 shortest_process = min(waiting_queue, key=lambda dict: dict["sys_info"][1])
-
-                ###############
                 current_process = waiting_queue.pop(waiting_queue.index(shortest_process))
-                for waiting_process in waiting_queue:
-                    waiting_process["wt"] += 1
-
                 current_process["sys_info"][1] -= 1
                 execution_history.append([current_process["name"], tact])
-                ################
+                # kalkuleerin ootamisajad
+                for waiting_process in waiting_queue:
+                    waiting_process["wt"] += 1
+                # panen tagasi
+                waiting_queue.append(current_process) if current_process.get("sys_info")[1] > 0 else done_processes.append(current_process)
 
-                if current_process["sys_info"][1] > 0:
-                    waiting_queue.append(current_process)
-                else:
-                    done_processes.append(current_process)
             tact += 1
         awt = round(mean([i["wt"] for i in done_processes]), 2)
 
@@ -76,11 +63,3 @@ class SRTF:
 
     def get_execution_order(self):
         return self.execution_order
-
-
-if __name__ == "__main__":
-    class_ = SRTF([[1, 10], [3, 3], [4, 2]])
-    order = class_.get_execution_order()
-    awt = class_.get_awt()
-    print(order)
-    print(awt)

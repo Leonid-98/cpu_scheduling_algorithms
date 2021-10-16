@@ -1,7 +1,6 @@
 import itertools
-from operator import index, itemgetter
+from operator import itemgetter
 from tkinter import *
-from PIL import ImageTk
 
 from FCFS import FCFS
 from FCFS2x import FCFS2x
@@ -81,7 +80,7 @@ class MyGui(Frame):
         self.name_label = Label(self.outercanvas, text="Operatsioonisüsteemid (LTAT.06.001)\nLeonid Tšigrinski 2021", font=self.font, bg="#dbf7ff")
         self.outercanvas.create_window(630, 140, anchor=NW, height=50, width=300, window=self.name_label)
 
-        self.order_label = Label(self.outercanvas, text="Test", font=self.font, bg="#dbf7ff")
+        self.order_label = Label(self.outercanvas, text="", font=self.font, bg="#dbf7ff")
         self.outercanvas.create_window(630, 200, anchor=NW, height=50, width=300, window=self.order_label)
 
     def convert_string_to_process_queue(self, string):

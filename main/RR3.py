@@ -11,14 +11,15 @@ class RR3:
         expected_processes = len(processes_queue)
         done_processes = []
 
+        waiting_queue = []
+        time_quantum = 3
+
         tact = 0
         name = 1
         is_process_were_executed = False
 
-        waiting_queue = []
-        
-
         while len(done_processes) < expected_processes:
+            # kontrollin, kas sain uued protsessid
             taken_processes = []
             new_arrival_processes = []
             for process in processes_queue:
@@ -29,30 +30,20 @@ class RR3:
                     taken_processes.append(process)
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
             waiting_queue = new_arrival_processes + waiting_queue
-            
-            
+
             if waiting_queue:
+                # käivitan protsess
                 current_process = waiting_queue.pop(0)
                 is_process_were_executed = True
-                execution_time = 0
-
-                if current_process["sys_info"][1] - 3 < 0:
-                    execution_time = current_process.get("sys_info")[1]
-                    current_process["sys_info"][1] = 0
-                else:
-                    execution_time = 3
-                    current_process["sys_info"][1] -= 3
-
-                for waiting_process in waiting_queue:
-                    waiting_process["wt"] += execution_time
-
+                execution_time = current_process.get("sys_info")[1] if current_process["sys_info"][1] <= time_quantum else time_quantum
+                current_process["sys_info"][1] -= execution_time
                 for i in range(execution_time):
                     execution_history.append([current_process["name"], tact + i])
-
-                if current_process.get("sys_info")[1] > 0:
-                    waiting_queue.append(current_process)
-                else:
-                    done_processes.append(current_process)
+                # kalkuleerin ootamisajad
+                for waiting_process in waiting_queue:
+                    waiting_process["wt"] += execution_time
+                # panen tagasi
+                waiting_queue.append(current_process) if current_process.get("sys_info")[1] > 0 else done_processes.append(current_process)
 
                 is_process_were_executed = True
                 tact += execution_time
@@ -77,20 +68,10 @@ class RR3:
                 execution_order[-1][1][1] += 1
             prev_elem = name
 
-        return execution_order 
+        return execution_order
 
     def get_awt(self):
         return self.awt
 
     def get_execution_order(self):
         return self.execution_order
-
-
-if __name__ == "__main__":
-    # TODO FIX RR
-    class_ = RR3([[1, 10], [2, 2], [2, 3], [4, 1]])
-    # class_ = RR3([[1, 6], [1, 4], [1, 3]])
-    order = class_.get_execution_order()
-    awt = class_.get_awt()
-    print(order)
-    print(awt)

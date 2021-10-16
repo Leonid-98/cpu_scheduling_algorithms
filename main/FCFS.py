@@ -17,7 +17,7 @@ class FCFS:
         name = 1
 
         while len(done_processes) < expected_processes:
-
+            # kontrollin, kas sain uued protsessid
             taken_processes = []
             for process in processes_queue:
                 if tact >= process[0]:
@@ -28,17 +28,15 @@ class FCFS:
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
             if waiting_queue:
+                # käivitan protsess
                 current_process = waiting_queue.pop(0)
-                for waiting_process in waiting_queue:
-                    waiting_process["wt"] += 1
-
                 current_process["sys_info"][1] -= 1
                 execution_history.append([current_process["name"], tact])
-
-                if current_process["sys_info"][1] > 0:
-                    waiting_queue.insert(0, current_process)
-                else:
-                    done_processes.append(current_process)
+                # kalkuleerin ootamisajad
+                for waiting_process in waiting_queue:
+                    waiting_process["wt"] += 1
+                # panen tagasi
+                waiting_queue.insert(0, current_process) if current_process.get("sys_info")[1] > 0 else done_processes.append(current_process)
 
             tact += 1
         awt = round(mean([i["wt"] for i in done_processes]), 2)
@@ -64,8 +62,3 @@ class FCFS:
 
     def get_execution_order(self):
         return self.execution_order
-
-
-if __name__ == "__main__":
-    go = FCFS([[0, 3], [1, 4], [1, 5]])
-    print(go.get_execution_order())

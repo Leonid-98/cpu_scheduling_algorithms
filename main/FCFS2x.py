@@ -18,19 +18,7 @@ class FCFS2x:
         name = 1
 
         while len(done_processes) < expected_processes:
-            # iterations = range(len(processes_queue))
-            # for i in iterations:
-            #     try:
-            #         if tact >= processes_queue[i][0]:
-            #             wt = tact - processes_queue[i][0]
-            #             if processes_queue[i][1] <= 3:
-            #                 high_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-            #             else:
-            #                 low_priority_q.append({"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-            #             name += 1
-            #     except IndexError:
-            #         pass
-
+            # kontrollin, kas sain uued protsessid
             taken_processes = []
             for process in processes_queue:
                 if tact >= process[0]:
@@ -43,35 +31,23 @@ class FCFS2x:
                     taken_processes.append(process)
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
 
-            if high_priority_q:
-                current_process = high_priority_q.pop(0)
+            waiting_queue = high_priority_q if high_priority_q else low_priority_q
+            if waiting_queue:
+                # käivitan protsess
+                current_process = waiting_queue.pop(0)
+                current_process["sys_info"][1] -= 1
+                execution_history.append([current_process["name"], tact])
+                # kalkuleerin ootamisajad
                 for waiting_process in high_priority_q:
                     waiting_process["wt"] += 1
-                if low_priority_q:
-                    for waiting_process in low_priority_q:
-                        waiting_process["wt"] += 1
-
-                current_process["sys_info"][1] -= 1
-                execution_history.append([current_process["name"], tact])
-
-                if current_process["sys_info"][1] > 0:
-                    high_priority_q.insert(0, current_process)
-                else:
-                    done_processes.append(current_process)
-
-            elif low_priority_q:
-                current_process = low_priority_q.pop(0)
                 for waiting_process in low_priority_q:
                     waiting_process["wt"] += 1
-
-                current_process["sys_info"][1] -= 1
-                execution_history.append([current_process["name"], tact])
-
+                # panen tagasi
                 if current_process["sys_info"][1] > 0:
                     if current_process["sys_info"][1] <= 3:
                         high_priority_q.insert(0, current_process)
                     else:
-                        low_priority_q.insert(0, current_process)
+                        waiting_queue.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
@@ -99,11 +75,3 @@ class FCFS2x:
 
     def get_execution_order(self):
         return self.execution_order
-
-
-if __name__ == "__main__":
-    fcfs2x = FCFS2x([[1, 10], [3, 3], [4, 1], [8, 6], [15, 2]])
-    order = fcfs2x.get_execution_order()
-    awt = fcfs2x.get_awt()
-    print(order)
-    print(awt)
