@@ -1,4 +1,4 @@
-from numpy import mean
+from numpy import mean, right_shift
 
 
 class RR3:
@@ -11,65 +11,28 @@ class RR3:
         expected_processes = len(processes_queue)
         done_processes = []
 
-        waiting_queue = []
-        is_process_were_executed = False
-
         tact = 0
         name = 1
 
-        # ----
+        waiting_queue = []
+        for elem in processes_queue:
+            waiting_queue.append({"name": f"P{name}", "sys_info": elem, "wt": 0})
+            name += 1
+
         while len(done_processes) < expected_processes:
-            iterations = range(len(processes_queue))
-            for i in iterations:
-                try:
-                    if tact >= processes_queue[i][0]:
-                        wt = tact - processes_queue[i][0]
-                        waiting_queue.insert(0, {"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-                        name += 1
-                except IndexError:
-                    pass
-            
-            # taken_processes = []
-            # for process in processes_queue:
-            #     if tact >= process[0]:
-            #         wt = tact - process[0]
-            #         waiting_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
-            #         name += 1
-            #         taken_processes.append(process)
-            # processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
-            
-            
-            if waiting_queue:
+
+            if tact >= waiting_queue[0]["sys_info"][0]:
                 current_process = waiting_queue.pop(0)
-                is_process_were_executed = True
-                execution_time = 0
+                print(tact, current_process)
+                waiting_queue.append(current_process)
 
-                if current_process["sys_info"][1] - 3 < 0:
-                    execution_time = current_process.get("sys_info")[1]
-                    current_process["sys_info"][1] = 0
-                else:
-                    execution_time = 3
-                    current_process["sys_info"][1] -= 3
 
-                for waiting_process in waiting_queue:
-                    waiting_process["wt"] += execution_time
+            tact += 1
+            if tact > 20:
+                break
 
-                for i in range(execution_time):
-                    execution_history.append([current_process["name"], tact + i])
-
-                if current_process.get("sys_info")[1] > 0:
-                    waiting_queue.append(current_process)
-                else:
-                    done_processes.append(current_process)
-
-                is_process_were_executed = True
-                tact += execution_time
-
-            if is_process_were_executed:
-                is_process_were_executed = False
-            else:
-                tact += 1
-        awt = round(mean([i["wt"] for i in done_processes]), 2)
+        # awt = round(mean([i["wt"] for i in done_processes]), 2)
+        awt = 0
 
         return execution_history, awt
 
@@ -96,7 +59,7 @@ class RR3:
 
 if __name__ == "__main__":
     # TODO FIX RR
-    class_ = RR3([[1, 10], [3, 3], [4, 1]])
+    class_ = RR3([[1, 10], [2, 2], [2, 3], [4, 1]])
     # class_ = RR3([[1, 6], [1, 4], [1, 3]])
     order = class_.get_execution_order()
     awt = class_.get_awt()
