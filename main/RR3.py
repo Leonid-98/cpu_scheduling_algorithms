@@ -1,4 +1,4 @@
-from numpy import mean, right_shift
+from numpy import mean
 
 
 class RR3:
@@ -20,15 +20,15 @@ class RR3:
 
         while len(done_processes) < expected_processes:
             taken_processes = []
-            ready_into_queue = []
+            new_arrival_processes = []
             for process in processes_queue:
                 if tact >= process[0]:
                     wt = tact - process[0]
-                    ready_into_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    new_arrival_processes.append({"name": f"P{name}", "sys_info": process, "wt": wt})
                     name += 1
                     taken_processes.append(process)
             processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
-            waiting_queue = ready_into_queue + waiting_queue
+            waiting_queue = new_arrival_processes + waiting_queue
             
             
             if waiting_queue:
