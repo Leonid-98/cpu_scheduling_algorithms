@@ -17,6 +17,7 @@ class RR3:
         tact = 0
         name = 1
 
+        # ----
         while len(done_processes) < expected_processes:
             iterations = range(len(processes_queue))
             for i in iterations:
