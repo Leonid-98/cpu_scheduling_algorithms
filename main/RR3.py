@@ -1,4 +1,7 @@
 from numpy import mean
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename="logfile_new.txt", filemode="a+", format="")
 
 
 class RR3:
@@ -18,56 +21,6 @@ class RR3:
         name = 1
 
         while len(done_processes) < expected_processes:
-            # iterations = range(len(processes_queue))
-            # for i in iterations:
-            #     try:
-            #         if tact >= processes_queue[i][0]:
-            #             wt = tact - processes_queue[i][0]
-            #             waiting_queue.insert(0, {"name": f"P{name}", "sys_info": processes_queue.pop(i), "wt": wt})
-            #             name += 1
-            #     except IndexError:
-            #         pass
-
-            # taken_processes = []
-            # for process in processes_queue:
-            #     if tact >= process[0]:
-            #         wt = tact - process[0]
-            #         waiting_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
-            #         name += 1
-            #         taken_processes.append(process)
-            # processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
-
-            # if waiting_queue:
-            #     current_process = waiting_queue.pop(0)
-            #     is_process_were_executed = True
-
-            #     execution_time = 0
-            #     if current_process["sys_info"][1] - 3 < 0:
-            #         execution_time = current_process.get("sys_info")[1]
-            #         current_process["sys_info"][1] = 0
-            #         for waiting_process in waiting_queue:
-            #             waiting_process["wt"] += execution_time
-            #     else:
-            #         execution_time = 3
-            #         current_process["sys_info"][1] -= 3
-            #         for waiting_process in waiting_queue:
-            #             waiting_process["wt"] += 3
-
-            #     for i in range(execution_time):
-            #         execution_history.append([current_process["name"], tact + i])
-
-            #     if current_process.get("sys_info")[1] > 0:
-            #         waiting_queue.append(current_process)
-            #     else:
-            #         done_processes.append(current_process)
-
-            #     is_process_were_executed = True
-            #     tact += execution_time
-
-            # if is_process_were_executed:
-            #     is_process_were_executed = False
-            # else:
-            #     tact += 1
             iterations = range(len(processes_queue))
             for i in iterations:
                 try:
@@ -77,22 +30,31 @@ class RR3:
                         name += 1
                 except IndexError:
                     pass
-
+            
+            # taken_processes = []
+            # for process in processes_queue:
+            #     if tact >= process[0]:
+            #         wt = tact - process[0]
+            #         waiting_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+            #         name += 1
+            #         taken_processes.append(process)
+            # processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
+            
+            
             if waiting_queue:
                 current_process = waiting_queue.pop(0)
                 is_process_were_executed = True
-
                 execution_time = 0
+
                 if current_process["sys_info"][1] - 3 < 0:
                     execution_time = current_process.get("sys_info")[1]
                     current_process["sys_info"][1] = 0
-                    for waiting_process in waiting_queue:
-                        waiting_process["wt"] += execution_time
                 else:
                     execution_time = 3
                     current_process["sys_info"][1] -= 3
-                    for waiting_process in waiting_queue:
-                        waiting_process["wt"] += 3
+
+                for waiting_process in waiting_queue:
+                    waiting_process["wt"] += execution_time
 
                 for i in range(execution_time):
                     execution_history.append([current_process["name"], tact + i])
@@ -136,7 +98,8 @@ class RR3:
 
 if __name__ == "__main__":
     # TODO FIX RR
-    class_ = RR3([[1, 10], [3, 3], [4, 2]])
+    class_ = RR3([[1, 10], [3, 3], [4, 1]])
+    # class_ = RR3([[1, 6], [1, 4], [1, 3]])
     order = class_.get_execution_order()
     awt = class_.get_awt()
     print(order)

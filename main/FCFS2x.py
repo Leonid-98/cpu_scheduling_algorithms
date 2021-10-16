@@ -102,7 +102,6 @@ class FCFS2x:
 
 
 if __name__ == "__main__":
-    # TODO FIX THIS SHIT
     fcfs2x = FCFS2x([[1, 10], [3, 3], [4, 1], [8, 6], [15, 2]])
     order = fcfs2x.get_execution_order()
     awt = fcfs2x.get_awt()
