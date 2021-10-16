@@ -13,26 +13,55 @@ class RR3:
 
         tact = 0
         name = 1
+        is_process_were_executed = False
 
         waiting_queue = []
-        for elem in processes_queue:
-            waiting_queue.append({"name": f"P{name}", "sys_info": elem, "wt": 0})
-            name += 1
+        
 
         while len(done_processes) < expected_processes:
-
-            if tact >= waiting_queue[0]["sys_info"][0]:
+            taken_processes = []
+            ready_into_queue = []
+            for process in processes_queue:
+                if tact >= process[0]:
+                    wt = tact - process[0]
+                    ready_into_queue.append({"name": f"P{name}", "sys_info": process, "wt": wt})
+                    name += 1
+                    taken_processes.append(process)
+            processes_queue = [elem for elem in processes_queue if elem not in taken_processes]
+            waiting_queue = ready_into_queue + waiting_queue
+            
+            
+            if waiting_queue:
                 current_process = waiting_queue.pop(0)
-                print(tact, current_process)
-                waiting_queue.append(current_process)
+                is_process_were_executed = True
+                execution_time = 0
 
+                if current_process["sys_info"][1] - 3 < 0:
+                    execution_time = current_process.get("sys_info")[1]
+                    current_process["sys_info"][1] = 0
+                else:
+                    execution_time = 3
+                    current_process["sys_info"][1] -= 3
 
-            tact += 1
-            if tact > 20:
-                break
+                for waiting_process in waiting_queue:
+                    waiting_process["wt"] += execution_time
 
-        # awt = round(mean([i["wt"] for i in done_processes]), 2)
-        awt = 0
+                for i in range(execution_time):
+                    execution_history.append([current_process["name"], tact + i])
+
+                if current_process.get("sys_info")[1] > 0:
+                    waiting_queue.append(current_process)
+                else:
+                    done_processes.append(current_process)
+
+                is_process_were_executed = True
+                tact += execution_time
+
+            if is_process_were_executed:
+                is_process_were_executed = False
+            else:
+                tact += 1
+        awt = round(mean([i["wt"] for i in done_processes]), 2)
 
         return execution_history, awt
 
@@ -48,7 +77,7 @@ class RR3:
                 execution_order[-1][1][1] += 1
             prev_elem = name
 
-        return execution_order
+        return execution_order 
 
     def get_awt(self):
         return self.awt
