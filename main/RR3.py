@@ -1,7 +1,4 @@
 from numpy import mean
-import logging
-
-logging.basicConfig(level=logging.DEBUG, filename="logfile_new.txt", filemode="a+", format="")
 
 
 class RR3:
