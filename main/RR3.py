@@ -45,7 +45,6 @@ class RR3:
                 # panen tagasi
                 waiting_queue.append(current_process) if current_process.get("sys_info")[1] > 0 else done_processes.append(current_process)
 
-                is_process_were_executed = True
                 tact += execution_time
 
             if is_process_were_executed:
