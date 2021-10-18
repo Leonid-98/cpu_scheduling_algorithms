@@ -47,7 +47,8 @@ class FCFS2x:
                     if current_process["sys_info"][1] <= 3:
                         high_priority_q.insert(0, current_process)
                     else:
-                        waiting_queue.insert(0, current_process)
+                        # mobile commit
+                        low_priority_q.insert(0, current_process)
                 else:
                     done_processes.append(current_process)
 
