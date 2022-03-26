@@ -1,6 +1,5 @@
 # CPU Scheduling Algorithms
 ## Simple graphical implementation of four processor scheduling algorithms using `Python` and `Tkinter` module.</br>
-Input is arrival_time, execution_time for each process </br>
 **1. First Come First Serve** </br>
 Processes are executed in order of arrival without interruption. </br>
 Waiting queue checked when executed process is done. </br>
